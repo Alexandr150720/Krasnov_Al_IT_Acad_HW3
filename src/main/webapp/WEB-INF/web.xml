@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         metadata-complete="false"
+         version="6.1">
+    <display-name>Vote</display-name>
+
+    <servlet>
+        <servlet-name>VoteServlet</servlet-name>
+        <servlet-class>by.it_academy.jd2.mk_jd2_111_25_7.VoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VoteServlet</servlet-name>
+        <url-pattern>/vote</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ResultServlet</servlet-name>
+        <servlet-class>by.it_academy.jd2.mk_jd2_111_25_7.ResultServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResultServlet</servlet-name>
+        <url-pattern>/result</url-pattern>
+    </servlet-mapping>
+</web-app>
