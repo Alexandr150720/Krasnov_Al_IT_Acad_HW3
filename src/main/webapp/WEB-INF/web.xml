@@ -8,7 +8,7 @@
 
     <servlet>
         <servlet-name>VoteServlet</servlet-name>
-        <servlet-class>by.it_academy.jd2.mk_jd2_111_25_7.VoteServlet</servlet-class>
+        <servlet-class>by.it_academy.jd2.mk_jd2_111_25_7.servlet.VoteServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>VoteServlet</servlet-name>
@@ -17,7 +17,7 @@
 
     <servlet>
         <servlet-name>ResultServlet</servlet-name>
-        <servlet-class>by.it_academy.jd2.mk_jd2_111_25_7.ResultServlet</servlet-class>
+        <servlet-class>by.it_academy.jd2.mk_jd2_111_25_7.servlet.ResultServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ResultServlet</servlet-name>
