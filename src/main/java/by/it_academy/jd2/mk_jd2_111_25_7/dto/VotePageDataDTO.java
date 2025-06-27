@@ -1,22 +1,22 @@
 package by.it_academy.jd2.mk_jd2_111_25_7.dto;
 
-import java.util.Set;
+import java.util.List;
 
 public class VotePageDataDTO {
 
-    private Set<String> performers;
-    private Set<String> genres;
+    private List<PerformerDTO> performers;
+    private List<GenreDTO> genres;
 
-    public VotePageDataDTO(Set<String> performers, Set<String> genres) {
+    public VotePageDataDTO(List<PerformerDTO> performers, List<GenreDTO> genres) {
         this.performers = performers;
         this.genres = genres;
     }
 
-    public Set<String> getPerformers() {
+    public List<PerformerDTO> getPerformers() {
         return performers;
     }
 
-    public Set<String> getGenres() {
+    public List<GenreDTO> getGenres() {
         return genres;
     }
 }

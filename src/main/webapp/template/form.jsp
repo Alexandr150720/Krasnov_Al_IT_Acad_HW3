@@ -14,12 +14,12 @@ language="java" %>
 <form action="vote" method="POST">
     <p><b>Выберите любимого исполнителя?</b></p>
     <c:forEach items="${singerList}" var="item">
-        <p><input type="radio" name="singer" value="${item}">${item}</p>
+        <p><input type="radio" name="singer" value="${item.getName()}">${item.getName()}</p>
     </c:forEach>
 
     <p><b>Ваши любимые жанры?</b></p>
     <c:forEach items="${genreList}" var="item">
-        <p><input type="checkbox" name="genre" value="${item}">${item}</p>
+        <p><input type="checkbox" name="genre" value="${item.getName()}">${item.getName()}</p>
     </c:forEach>
 
     <p><b>Расскажите о себе?</b></p>

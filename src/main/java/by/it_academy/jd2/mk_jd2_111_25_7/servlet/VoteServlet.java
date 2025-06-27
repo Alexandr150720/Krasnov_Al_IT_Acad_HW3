@@ -1,10 +1,10 @@
 package by.it_academy.jd2.mk_jd2_111_25_7.servlet;
 
-import by.it_academy.jd2.mk_jd2_111_25_7.dto.VoteDTO;
+import by.it_academy.jd2.mk_jd2_111_25_7.constant.ConnectionConstant;
+import by.it_academy.jd2.mk_jd2_111_25_7.dto.UserVoteDTO;
 import by.it_academy.jd2.mk_jd2_111_25_7.dto.VotePageDataDTO;
 import by.it_academy.jd2.mk_jd2_111_25_7.exception.InvalidGenreNumber;
-import by.it_academy.jd2.mk_jd2_111_25_7.repository.IVoteRepository;
-import by.it_academy.jd2.mk_jd2_111_25_7.repository.VoteRepository;
+import by.it_academy.jd2.mk_jd2_111_25_7.repository.*;
 import by.it_academy.jd2.mk_jd2_111_25_7.service.IVoteService;
 import by.it_academy.jd2.mk_jd2_111_25_7.service.VoteService;
 import jakarta.servlet.ServletException;
@@ -13,13 +13,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Properties;
 
 public class VoteServlet extends HttpServlet {
     IVoteService voteService;
 
     public VoteServlet() {
-        IVoteRepository voteRepository = VoteRepository.getInstance();
-        voteService = new VoteService(voteRepository);
+        Properties props = new Properties();
+        props.setProperty("user", ConnectionConstant.USER);
+        props.setProperty("password", ConnectionConstant.PASSWORD);
+        props.setProperty("ssl", ConnectionConstant.SSL);
+        IVoteRepository voteRepository = new VoteRepository(ConnectionConstant.URL, ConnectionConstant.DRIVER, props);
+        IPerformerRepository performerRepository = new PerformerRepository(ConnectionConstant.URL, ConnectionConstant.DRIVER, props);
+        IGenreRepository genreRepository = new GenreRepository(ConnectionConstant.URL, ConnectionConstant.DRIVER, props);
+        voteService = new VoteService(voteRepository, performerRepository, genreRepository);
     }
 
     @Override
@@ -29,12 +36,15 @@ public class VoteServlet extends HttpServlet {
         String[] selectedGenres = req.getParameterValues("genre");
         String about = req.getParameter("about");
 
-        VoteDTO voteDTO = new VoteDTO(selectedGenres, singer, about);
+        UserVoteDTO userVoteDTO = new UserVoteDTO(singer, selectedGenres, about);
 
         try{
-            voteService.addVote(voteDTO);
+            voteService.addVote(userVoteDTO);
         } catch (InvalidGenreNumber e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad request");
             return;
         }
 

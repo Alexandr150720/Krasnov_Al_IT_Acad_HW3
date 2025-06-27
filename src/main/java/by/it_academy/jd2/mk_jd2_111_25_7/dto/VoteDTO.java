@@ -1,23 +1,19 @@
 package by.it_academy.jd2.mk_jd2_111_25_7.dto;
 
+import java.time.LocalDateTime;
+
 public class VoteDTO {
 
-    private String singer;
-    private String[] selectedGenres;
+    private LocalDateTime createdAt;
     private String about;
 
-    public VoteDTO(String[] selectedGenres, String singer, String about) {
-        this.selectedGenres = selectedGenres;
-        this.singer = singer;
+    public VoteDTO(LocalDateTime createdAt, String about) {
+        this.createdAt = createdAt;
         this.about = about;
     }
 
-    public String getSinger() {
-        return singer;
-    }
-
-    public String[] getSelectedGenres() {
-        return selectedGenres;
+    public LocalDateTime getCreated_at() {
+        return createdAt;
     }
 
     public String getAbout() {
