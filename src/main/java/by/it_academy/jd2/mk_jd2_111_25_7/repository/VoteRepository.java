@@ -1,67 +1,80 @@
 package by.it_academy.jd2.mk_jd2_111_25_7.repository;
 
-import by.it_academy.jd2.mk_jd2_111_25_7.dto.ResultDTO;
 import by.it_academy.jd2.mk_jd2_111_25_7.dto.VoteDTO;
+import by.it_academy.jd2.mk_jd2_111_25_7.dto.VoteResultDTO;
 
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class VoteRepository implements IVoteRepository{
-    private static final VoteRepository instance = new VoteRepository();
-    private final Map<String, Integer> performers = new ConcurrentHashMap<>();
-    private final Map<String, Integer> genres = new ConcurrentHashMap<>();
-    private final List<String> aboutTexts = Collections.synchronizedList(new ArrayList<>());
 
-    private VoteRepository() {
-        performers.put("T-Fest", 0);
-        performers.put("V$XVP PRINCE", 0);
-        performers.put("Scriptonit", 0);
-        performers.put("Kizaru", 0);
+    private String url;
+    private String driver;
+    private Properties props;
 
-        genres.put("Джаз", 0);
-        genres.put("Рок", 0);
-        genres.put("Хип-хоп", 0);
-        genres.put("Шансон", 0);
-        genres.put("Блюз", 0);
-        genres.put("Кантри", 0);
-        genres.put("Регги", 0);
-        genres.put("Фонк", 0);
-        genres.put("Классика", 0);
-        genres.put("Рэп", 0);
-    }
-
-    public static VoteRepository getInstance() {
-        return instance;
-    }
-
-    public synchronized void addVote(VoteDTO voteDTO) {
-        performers.put(voteDTO.getSinger(), performers.get(voteDTO.getSinger()) + 1);
-        for (String genre : voteDTO.getSelectedGenres()) {
-            genres.put(genre, genres.get(genre) + 1);
-        }
-        aboutTexts.add(new Date() + ": " + voteDTO.getAbout());
-    }
-
-    public Set<String> getPerformers() {
-        return performers.keySet();
-    }
-
-    public Set<String> getGenres() {
-        return genres.keySet();
-    }
-
-    public List<String> getAboutTexts() {
-        return new ArrayList<>(aboutTexts);
+    public VoteRepository(String url, String driver, Properties props) {
+        this.url = url;
+        this.driver = driver;
+        this.props = props;
     }
 
     @Override
-    public ResultDTO getResult() {
-        LinkedHashMap<String, Integer> performersCopy = new LinkedHashMap<>(performers);
-        LinkedHashMap<String, Integer> genresCopy = new LinkedHashMap<>(genres);
-        List<String> aboutTextsCopy = new ArrayList<>(aboutTexts);
+    public List<VoteDTO> readAll() throws ClassNotFoundException {
 
-        return new ResultDTO(performersCopy, genresCopy, aboutTextsCopy);
+        List<VoteDTO> voteDTOList = new ArrayList<>();
+        Class.forName(driver);
+        try (Connection conn = DriverManager.getConnection(url, props);
+             PreparedStatement stmt = conn.prepareStatement("SELECT created_at, about FROM vote_app.vote");
+             ResultSet resultSet = stmt.executeQuery()){
+
+            while (resultSet.next()){
+                LocalDateTime createdAt = resultSet.getObject("created_at", LocalDateTime.class);
+                String about = resultSet.getString("about");
+                voteDTOList.add(new VoteDTO(createdAt, about));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return voteDTOList;
     }
 
+    @Override
+    public boolean add(VoteDTO voteDTO) {
 
+        try (Connection conn = DriverManager.getConnection(url, props);
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO vote_app.vote (created_at, about) VALUES (?, ?)",
+                     Statement.RETURN_GENERATED_KEYS)) {
+            Timestamp tsCreatedAt = Timestamp.valueOf(voteDTO.getCreated_at());
+            stmt.setTimestamp(1, tsCreatedAt);
+            stmt.setString(2, voteDTO.getAbout());
+            stmt.execute();
+        }catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public VoteResultDTO getResult() throws ClassNotFoundException {
+
+        List<String> aboutText = new ArrayList<>();
+        Class.forName(driver);
+        try (Connection conn = DriverManager.getConnection(url, props);
+             PreparedStatement stmt = conn.prepareStatement("SELECT created_at, about FROM vote_app.vote");
+             ResultSet resultSet = stmt.executeQuery()){
+
+            while (resultSet.next()){
+                LocalDateTime createdAt = resultSet.getObject("created_at", LocalDateTime.class);
+                String about = resultSet.getString("about");
+                aboutText.add(createdAt + " : " + about);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new VoteResultDTO(aboutText);
+    }
 }
